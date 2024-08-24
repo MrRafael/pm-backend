@@ -9,21 +9,30 @@ export class User {
   @PrimaryGeneratedColumn()
   id: number;
 
-  @Column()
+  @Column({ nullable: true })
   name: string;
 
   @Column()
   email: string;
 
-  @Column()
+  @Column({ nullable: true })
   @Exclude()
   password: string;
 
   @Column({ default: true })
   isActive: boolean;
 
-  @Column({ default: 'worker', type: 'varchar' })
-  role: Roles;
+  @Column({ default: false })
+  isComplete: boolean;
+
+  @Column({ nullable: true })
+  accessCode: string;
+
+  @Column({ nullable: true })
+  changePassLimit: Date;
+
+  @Column('varchar', { default: ['worker'], array: true })
+  role: Roles[];
 
   @BeforeInsert()
   async hashPassword() {
