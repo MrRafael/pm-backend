@@ -1,11 +1,12 @@
 import { Inject, Injectable, BadRequestException } from '@nestjs/common';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
-import { Not, Repository } from 'typeorm';
+import { Not, Repository, ArrayContains } from 'typeorm';
 import { User } from './entities/user.entity';
 import { usersConstants } from './constants';
 import { JwtService } from '@nestjs/jwt';
 import * as bcrypt from 'bcrypt';
+import { Role } from 'src/enums/role.enum';
 
 @Injectable()
 export class UsersService {
@@ -22,7 +23,7 @@ export class UsersService {
 
     const creator = await this.findOne(decoded.username);
 
-    if (creator.role === 'worker') {
+    if (creator.roles.includes(Role.Worker)) {
       throw new BadRequestException('Não pode criar usuários.');
     }
 
@@ -41,7 +42,9 @@ export class UsersService {
   }
 
   findAll(): Promise<User[]> {
-    return this.userRepository.find({ where: { role: Not('superAdmin') } });
+    return this.userRepository.find({
+      where: { roles: Not(ArrayContains([Role.SuperAdmin])) },
+    });
   }
 
   async findOne(email: string) {
@@ -55,7 +58,7 @@ export class UsersService {
     const decoded = this.jwtService.decode(token);
     const creator = await this.findOne(decoded.username);
 
-    if (creator.role === 'worker') {
+    if (creator.roles.includes(Role.Worker)) {
       throw new BadRequestException('Não pode alterar usuários.');
     }
 
@@ -66,15 +69,15 @@ export class UsersService {
     }
 
     if (
-      userSaved?.role !== 'worker' &&
+      !userSaved?.roles.includes(Role.Worker) &&
       userSaved.id !== creator.id &&
-      creator.role !== 'superAdmin'
+      !creator.roles.includes(Role.SuperAdmin)
     ) {
       throw new BadRequestException('Email não pode ser alterado.');
     }
 
     userSaved.name = updateUserDto.name;
-    userSaved.role = updateUserDto.role;
+    userSaved.roles = updateUserDto.roles;
 
     if (userSaved.email !== updateUserDto.email) {
       const emailToSave = await this.findOne(updateUserDto.email);
@@ -97,7 +100,7 @@ export class UsersService {
     const decoded = this.jwtService.decode(token);
     const creator = await this.findOne(decoded.username);
 
-    if (creator.role !== 'superAdmin') {
+    if (creator.roles.includes(Role.SuperAdmin)) {
       throw new BadRequestException('Não pode alterar usuários.');
     }
 
@@ -118,16 +121,16 @@ export class UsersService {
     const decoded = this.jwtService.decode(token);
     const creator = await this.findOne(decoded.username);
 
-    if (creator.role === 'worker') {
+    if (creator.roles.includes(Role.Worker)) {
       throw new BadRequestException('Não pode deletar usuários.');
     }
 
     const userSaved = await this.userRepository.findOneBy({ id });
 
     if (
-      userSaved?.role !== 'worker' &&
+      !userSaved?.roles.includes(Role.Worker) &&
       userSaved.id !== creator.id &&
-      creator.role !== 'superAdmin'
+      !creator.roles.includes(Role.SuperAdmin)
     ) {
       throw new BadRequestException('Email não pode ser deletado.');
     }

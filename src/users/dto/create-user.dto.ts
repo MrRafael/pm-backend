@@ -1,6 +1,6 @@
 import { IsNotEmpty, IsEmail, IsString } from 'class-validator';
+import { Role } from 'src/enums/role.enum';
 
-type Roles = 'admin' | 'superAdmin' | 'worker';
 export class CreateUserDto {
   @IsNotEmpty()
   readonly name: string;
@@ -10,7 +10,7 @@ export class CreateUserDto {
   readonly email: string;
 
   @IsNotEmpty()
-  readonly role: Roles;
+  readonly roles: Role[];
 
   @IsNotEmpty()
   @IsString()

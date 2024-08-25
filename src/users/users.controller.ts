@@ -15,6 +15,8 @@ import { UsersService } from './users.service';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
 import { JwtAuthGuard } from 'src/auth/jwt-auth.guard';
+import { Role } from 'src/enums/role.enum';
+import { Roles } from 'src/auth/roles.decorator';
 
 @Controller('users')
 export class UsersController {
@@ -22,6 +24,7 @@ export class UsersController {
 
   @Post()
   @UseGuards(JwtAuthGuard)
+  @Roles(Role.Admin)
   @UseInterceptors(ClassSerializerInterceptor)
   create(@Body() createUserDto: CreateUserDto, @Request() req) {
     return this.usersService.create(createUserDto, req.headers);
@@ -30,6 +33,7 @@ export class UsersController {
   @Get()
   @UseGuards(JwtAuthGuard)
   @UseInterceptors(ClassSerializerInterceptor)
+  @Roles(Role.Worker)
   findAll() {
     return this.usersService.findAll();
   }

@@ -19,7 +19,6 @@ export class AuthService {
 
   async validateUser(email: string, pass: string): Promise<any> {
     const user = await this.usersService.findOne(email);
-
     if (!user) {
       return null;
     }
@@ -43,7 +42,7 @@ export class AuthService {
         secret: this.configService.get<string>('jwt.refreshSecret'),
         expiresIn: this.configService.get<string>('jwt.refreshDuration'),
       }),
-      role: user.role,
+      role: user.roles,
       email: user.email,
     };
   }
@@ -70,7 +69,7 @@ export class AuthService {
           secret: this.configService.get<string>('jwt.refreshSecret'),
           expiresIn: this.configService.get<string>('jwt.refreshDuration'),
         }),
-        role: user.role,
+        role: user.roles,
         email: user.email,
       };
     } catch (err) {

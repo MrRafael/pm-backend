@@ -1,9 +1,7 @@
 import { Entity, Column, PrimaryGeneratedColumn, BeforeInsert } from 'typeorm';
 import * as bcrypt from 'bcrypt';
 import { Exclude } from 'class-transformer';
-
-type Roles = 'admin' | 'superAdmin' | 'worker';
-
+import { Role } from '../../enums/role.enum';
 @Entity()
 export class User {
   @PrimaryGeneratedColumn()
@@ -32,7 +30,7 @@ export class User {
   changePassLimit: Date;
 
   @Column('varchar', { default: ['worker'], array: true })
-  role: Roles[];
+  roles: Role[];
 
   @BeforeInsert()
   async hashPassword() {
