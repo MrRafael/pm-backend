@@ -21,7 +21,7 @@ export class RolesGuard implements CanActivate {
 
     const decoded = this.jwtService.decode(token);
 
-    const creator = await this.userService.findOne(decoded.username);
+    const creator = await this.userService.findOneByEmail(decoded.username);
     return creator?.roles ? creator?.roles : [];
   }
 
@@ -38,6 +38,8 @@ export class RolesGuard implements CanActivate {
     const roles = await this.loadRolesFromAuthorization(
       headers['authorization'],
     );
+
+    requiredRoles.push(Role.SuperAdmin);
 
     return requiredRoles.some((role) => roles.includes(role));
   }

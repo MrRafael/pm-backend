@@ -14,39 +14,34 @@ import {
 import { UsersService } from './users.service';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
-import { JwtAuthGuard } from 'src/auth/jwt-auth.guard';
 import { Role } from 'src/enums/role.enum';
 import { Roles } from 'src/auth/roles.decorator';
-
+import { UserExistGuard } from './users.guard';
 @Controller('users')
+@UseInterceptors(ClassSerializerInterceptor)
 export class UsersController {
   constructor(private readonly usersService: UsersService) {}
 
   @Post()
-  @UseGuards(JwtAuthGuard)
   @Roles(Role.Admin)
-  @UseInterceptors(ClassSerializerInterceptor)
-  create(@Body() createUserDto: CreateUserDto, @Request() req) {
-    return this.usersService.create(createUserDto, req.headers);
+  create(@Body() createUserDto: CreateUserDto) {
+    return this.usersService.create(createUserDto);
   }
 
   @Get()
-  @UseGuards(JwtAuthGuard)
-  @UseInterceptors(ClassSerializerInterceptor)
-  @Roles(Role.Worker)
+  @Roles(Role.Admin)
   findAll() {
     return this.usersService.findAll();
   }
 
   @Get(':email')
-  @UseInterceptors(ClassSerializerInterceptor)
+  @Roles(Role.Worker, Role.Admin)
   findOne(@Param('email') email: string) {
-    return this.usersService.findOne(email);
+    return this.usersService.findOneByEmail(email);
   }
 
-  @UseGuards(JwtAuthGuard)
+  @Roles(Role.Worker, Role.Admin)
   @Patch(':id')
-  @UseInterceptors(ClassSerializerInterceptor)
   update(
     @Param('id') id: string,
     @Body() updateUserDto: UpdateUserDto,
@@ -55,17 +50,16 @@ export class UsersController {
     return this.usersService.update(+id, updateUserDto, req.headers);
   }
 
-  @UseGuards(JwtAuthGuard)
   @Patch('deactivate/:id')
-  @UseInterceptors(ClassSerializerInterceptor)
-  deactivateActivate(@Param('id') id: string, @Request() req) {
-    return this.usersService.deactivate(+id, req.headers);
+  @Roles()
+  deactivateActivate(@Param('id') id: string) {
+    return this.usersService.deactivate(+id);
   }
 
-  @UseGuards(JwtAuthGuard)
   @Delete(':id')
-  @UseInterceptors(ClassSerializerInterceptor)
-  remove(@Param('id') id: string, @Request() req) {
-    return this.usersService.remove(+id, req.headers);
+  @UseGuards(UserExistGuard)
+  @Roles(Role.Admin)
+  remove(@Param('id') id: string) {
+    return this.usersService.remove(+id);
   }
 }

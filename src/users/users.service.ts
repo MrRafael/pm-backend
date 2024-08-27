@@ -16,21 +16,11 @@ export class UsersService {
     private jwtService: JwtService,
   ) {}
 
-  async create(createUserDto: CreateUserDto, headers: any) {
-    const token = headers.authorization?.split(' ')[1];
-
-    const decoded = this.jwtService.decode(token);
-
-    const creator = await this.findOne(decoded.username);
-
-    if (creator.roles.includes(Role.Worker)) {
-      throw new BadRequestException('Não pode criar usuários.');
-    }
-
-    const userSaved = await this.findOne(createUserDto.email);
+  async create(createUserDto: CreateUserDto) {
+    const userSaved = await this.findOneByEmail(createUserDto.email);
 
     if (userSaved) {
-      throw new BadRequestException('Email ja cadastrado');
+      throw new BadRequestException();
     }
 
     const user = new User();
@@ -47,8 +37,13 @@ export class UsersService {
     });
   }
 
-  async findOne(email: string) {
+  async findOneByEmail(email: string) {
     const users = await this.userRepository.find({ where: { email } });
+    return users[0];
+  }
+
+  async findOne(id: number) {
+    const users = await this.userRepository.find({ where: { id } });
     return users[0];
   }
 
@@ -56,23 +51,15 @@ export class UsersService {
     const token = headers.authorization?.split(' ')[1];
 
     const decoded = this.jwtService.decode(token);
-    const creator = await this.findOne(decoded.username);
+    const creator = await this.findOneByEmail(decoded.username);
 
-    if (creator.roles.includes(Role.Worker)) {
-      throw new BadRequestException('Não pode alterar usuários.');
-    }
-
-    const userSaved = await this.userRepository.findOneBy({ id });
+    const userSaved = await this.findOne(id);
 
     if (!userSaved) {
-      throw new BadRequestException('Usuario não existe.');
+      throw new BadRequestException();
     }
 
-    if (
-      !userSaved?.roles.includes(Role.Worker) &&
-      userSaved.id !== creator.id &&
-      !creator.roles.includes(Role.SuperAdmin)
-    ) {
+    if (userSaved.id !== creator.id) {
       throw new BadRequestException('Email não pode ser alterado.');
     }
 
@@ -80,7 +67,7 @@ export class UsersService {
     userSaved.roles = updateUserDto.roles;
 
     if (userSaved.email !== updateUserDto.email) {
-      const emailToSave = await this.findOne(updateUserDto.email);
+      const emailToSave = await this.findOneByEmail(updateUserDto.email);
       if (emailToSave)
         throw new BadRequestException('Email ja pode cadastrado');
 
@@ -94,20 +81,11 @@ export class UsersService {
     return this.userRepository.save(userSaved);
   }
 
-  async deactivate(id: number, headers: any) {
-    const token = headers.authorization?.split(' ')[1];
-
-    const decoded = this.jwtService.decode(token);
-    const creator = await this.findOne(decoded.username);
-
-    if (creator.roles.includes(Role.SuperAdmin)) {
-      throw new BadRequestException('Não pode alterar usuários.');
-    }
-
-    const userSaved = await this.userRepository.findOneBy({ id });
+  async deactivate(id: number) {
+    const userSaved = await this.findOne(id);
 
     if (!userSaved) {
-      throw new BadRequestException('Usuario não existe.');
+      throw new BadRequestException();
     }
 
     userSaved.isActive = !userSaved.isActive;
@@ -115,26 +93,7 @@ export class UsersService {
     return this.userRepository.save(userSaved);
   }
 
-  async remove(id: number, headers: any) {
-    const token = headers.authorization?.split(' ')[1];
-
-    const decoded = this.jwtService.decode(token);
-    const creator = await this.findOne(decoded.username);
-
-    if (creator.roles.includes(Role.Worker)) {
-      throw new BadRequestException('Não pode deletar usuários.');
-    }
-
-    const userSaved = await this.userRepository.findOneBy({ id });
-
-    if (
-      !userSaved?.roles.includes(Role.Worker) &&
-      userSaved.id !== creator.id &&
-      !creator.roles.includes(Role.SuperAdmin)
-    ) {
-      throw new BadRequestException('Email não pode ser deletado.');
-    }
-
+  async remove(id: number) {
     return this.userRepository.delete(id);
   }
 }

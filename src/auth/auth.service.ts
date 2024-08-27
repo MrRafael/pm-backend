@@ -18,7 +18,7 @@ export class AuthService {
   ) {}
 
   async validateUser(email: string, pass: string): Promise<any> {
-    const user = await this.usersService.findOne(email);
+    const user = await this.usersService.findOneByEmail(email);
     if (!user) {
       return null;
     }
@@ -81,11 +81,5 @@ export class AuthService {
       }
       throw new UnauthorizedException(err.name);
     }
-  }
-
-  async verify(token: any) {
-    return {
-      isValid: this.jwtService.verify(token),
-    };
   }
 }
