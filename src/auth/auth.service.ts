@@ -50,10 +50,14 @@ export class AuthService {
   async refresh(headers: any) {
     const token = headers.authorization?.split(' ')[1];
 
+    if (!token) {
+      throw new NotFoundException('User not found');
+    }
+
     const decoded = this.jwtService.decode(token);
     const payload = { username: decoded.username, sub: decoded.sub };
 
-    const user = await this.usersService.findOne(payload.username);
+    const user = await this.usersService.findOneByEmail(payload.username);
 
     if (!user) {
       throw new NotFoundException('User not found');
@@ -81,5 +85,11 @@ export class AuthService {
       }
       throw new UnauthorizedException(err.name);
     }
+  }
+
+  async verify(token: any) {
+    return {
+      isValid: this.jwtService.verify(token),
+    };
   }
 }

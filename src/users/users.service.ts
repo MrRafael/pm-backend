@@ -26,7 +26,7 @@ export class UsersService {
     const user = new User();
     user.name = createUserDto.name;
     user.email = createUserDto.email;
-    user.password = createUserDto.password;
+    // user.password = createUserDto.password;
 
     return this.userRepository.save(user);
   }
@@ -74,9 +74,9 @@ export class UsersService {
       userSaved.email = updateUserDto.email;
     }
 
-    if (updateUserDto.password) {
-      userSaved.password = await bcrypt.hash(updateUserDto.password, 10);
-    }
+    // if (updateUserDto.password) {
+    //   userSaved.password = await bcrypt.hash(updateUserDto.password, 10);
+    // }
 
     return this.userRepository.save(userSaved);
   }
