@@ -1,5 +1,4 @@
-import { Entity, Column, PrimaryGeneratedColumn, BeforeInsert } from 'typeorm';
-import * as bcrypt from 'bcrypt';
+import { Entity, Column, PrimaryGeneratedColumn } from 'typeorm';
 import { Exclude } from 'class-transformer';
 import { Role } from '../../enums/role.enum';
 @Entity()
@@ -24,18 +23,13 @@ export class User {
   isComplete: boolean;
 
   @Column({ nullable: true })
+  @Exclude()
   accessCode: string;
 
   @Column({ nullable: true })
+  @Exclude()
   changePassLimit: Date;
 
   @Column('varchar', { default: ['worker'], array: true })
   roles: Role[];
-
-  @BeforeInsert()
-  async hashPassword() {
-    if (this.password) {
-      this.password = await bcrypt.hash(this.password, 10);
-    }
-  }
 }

@@ -17,6 +17,9 @@ import { UpdateUserDto } from './dto/update-user.dto';
 import { Role } from 'src/enums/role.enum';
 import { Roles } from 'src/auth/roles.decorator';
 import { UserExistGuard } from './users.guard';
+import { Public } from 'src/auth/public.decorator';
+import { CompleteUserDto } from './dto/complete-user.dto copy';
+import { ResetUserDto } from './dto/reset-user.dto';
 @Controller('users')
 @UseInterceptors(ClassSerializerInterceptor)
 export class UsersController {
@@ -26,6 +29,24 @@ export class UsersController {
   @Roles(Role.Admin)
   create(@Body() createUserDto: CreateUserDto) {
     return this.usersService.create(createUserDto);
+  }
+
+  @Post('/complete')
+  @Public()
+  complete(@Body() completeUserDto: CompleteUserDto) {
+    return this.usersService.complete(completeUserDto);
+  }
+
+  @Post('/reset')
+  @Public()
+  reset(@Body() resetUserDto: ResetUserDto) {
+    return this.usersService.reset(resetUserDto);
+  }
+
+  @Get('/code/:code')
+  @Public()
+  findByCode(@Param('code') code: string) {
+    return this.usersService.findOneByCode(code);
   }
 
   @Get()
