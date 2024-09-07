@@ -61,7 +61,6 @@ export class UsersController {
     return this.usersService.findOneByEmail(email);
   }
 
-  @Roles(Role.Worker, Role.Admin)
   @Patch(':id')
   update(
     @Param('id') id: string,

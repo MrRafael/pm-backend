@@ -1,4 +1,10 @@
-import { Inject, Injectable, BadRequestException, NotFoundException } from '@nestjs/common';
+import {
+  Inject,
+  Injectable,
+  BadRequestException,
+  NotFoundException,
+  ForbiddenException,
+} from '@nestjs/common';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
 import { Not, Repository, ArrayContains } from 'typeorm';
@@ -29,6 +35,7 @@ export class UsersService {
     const user = new User();
     user.name = createUserDto.name;
     user.email = createUserDto.email;
+    user.roles = createUserDto.roles;
     user.accessCode = uuidv4();
 
     return this.userRepository.save(user);
@@ -102,7 +109,6 @@ export class UsersService {
     const token = headers.authorization?.split(' ')[1];
 
     const decoded = this.jwtService.decode(token);
-    const creator = await this.findOneByEmail(decoded.username);
 
     const userSaved = await this.findOne(id);
 
@@ -110,24 +116,24 @@ export class UsersService {
       throw new BadRequestException();
     }
 
-    if (userSaved.id !== creator.id) {
-      throw new BadRequestException('Email não pode ser alterado.');
+    if (userSaved.email !== decoded.username) {
+      throw new ForbiddenException();
     }
 
     userSaved.name = updateUserDto.name;
-    userSaved.roles = updateUserDto.roles;
 
     if (userSaved.email !== updateUserDto.email) {
       const emailToSave = await this.findOneByEmail(updateUserDto.email);
-      if (emailToSave)
-        throw new BadRequestException('Email ja pode cadastrado');
+      if (emailToSave) {
+        throw new BadRequestException();
+      }
 
       userSaved.email = updateUserDto.email;
     }
 
-    // if (updateUserDto.password) {
-    //   userSaved.password = await bcrypt.hash(updateUserDto.password, 10);
-    // }
+    if (updateUserDto.password) {
+      userSaved.password = await bcrypt.hash(updateUserDto.password, 10);
+    }
 
     return this.userRepository.save(userSaved);
   }
