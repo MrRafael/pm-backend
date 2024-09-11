@@ -10,6 +10,7 @@ import { RolesGuard } from './auth/roles.guard';
 import { JwtModule } from '@nestjs/jwt';
 import { JwtAuthGuard } from './auth/jwt-auth.guard';
 import { ClientsModule } from './clients/clients.module';
+import { FileCategoryModule } from './file-category/file-category.module';
 
 @Module({
   imports: [
@@ -29,6 +30,7 @@ import { ClientsModule } from './clients/clients.module';
       global: true,
     }),
     ClientsModule,
+    FileCategoryModule,
   ],
   controllers: [AppController],
   providers: [
