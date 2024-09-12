@@ -11,6 +11,7 @@ import { JwtModule } from '@nestjs/jwt';
 import { JwtAuthGuard } from './auth/jwt-auth.guard';
 import { ClientsModule } from './clients/clients.module';
 import { FileCategoryModule } from './file-category/file-category.module';
+import { ProposalTemplateModule } from './proposal-template/proposal-template.module';
 
 @Module({
   imports: [
@@ -31,6 +32,7 @@ import { FileCategoryModule } from './file-category/file-category.module';
     }),
     ClientsModule,
     FileCategoryModule,
+    ProposalTemplateModule,
   ],
   controllers: [AppController],
   providers: [
