@@ -1,6 +1,7 @@
-import { Entity, Column, PrimaryGeneratedColumn } from 'typeorm';
+import { Entity, Column, PrimaryGeneratedColumn, OneToMany } from 'typeorm';
 import { Exclude } from 'class-transformer';
 import { Role } from '../../enums/role.enum';
+import { ProjectNote } from 'src/project-note/entities/project-note.entity';
 @Entity()
 export class User {
   @PrimaryGeneratedColumn()
@@ -32,4 +33,9 @@ export class User {
 
   @Column('varchar', { default: ['worker'], array: true })
   roles: Role[];
+
+  @OneToMany(() => ProjectNote, (note) => note.user, {
+    onDelete: 'NO ACTION',
+  })
+  notes: ProjectNote[];
 }

@@ -12,6 +12,10 @@ import { JwtAuthGuard } from './auth/jwt-auth.guard';
 import { ClientsModule } from './clients/clients.module';
 import { FileCategoryModule } from './file-category/file-category.module';
 import { ProposalTemplateModule } from './proposal-template/proposal-template.module';
+import { ProjectModule } from './project/project.module';
+import { PaymentInstallmentsModule } from './payment-installments/payment-installments.module';
+import { ProjectFilesModule } from './project-files/project-files.module';
+import { ProjectNoteModule } from './project-note/project-note.module';
 
 @Module({
   imports: [
@@ -33,6 +37,10 @@ import { ProposalTemplateModule } from './proposal-template/proposal-template.mo
     ClientsModule,
     FileCategoryModule,
     ProposalTemplateModule,
+    ProjectModule,
+    PaymentInstallmentsModule,
+    ProjectFilesModule,
+    ProjectNoteModule,
   ],
   controllers: [AppController],
   providers: [

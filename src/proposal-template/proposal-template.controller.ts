@@ -10,6 +10,7 @@ import {
 } from '@nestjs/common';
 import { ProposalTemplateService } from './proposal-template.service';
 import { FileInterceptor } from '@nestjs/platform-express';
+import { diskStorage } from 'multer';
 
 @Controller('proposal-template')
 export class ProposalTemplateController {
@@ -18,7 +19,18 @@ export class ProposalTemplateController {
   ) {}
 
   @Post()
-  @UseInterceptors(FileInterceptor('file', { dest: './uploads' }))
+  @UseInterceptors(
+    FileInterceptor('file', {
+      storage: diskStorage({
+        destination: function (req, file, cb) {
+          cb(null, './uploads');
+        },
+        filename: function (req, file, cb) {
+          cb(null, Date.now() + '-' + file.originalname);
+        },
+      }),
+    }),
+  )
   create(
     @UploadedFile(new ParseFilePipe())
     file: Express.Multer.File,
@@ -29,6 +41,14 @@ export class ProposalTemplateController {
   @Get()
   findAll() {
     return this.proposalTemplateService.findAll();
+  }
+
+  @Get('/download')
+  download(
+    @Param('proposalId') proposalId: number,
+    @Param('projectId') projectId: string,
+  ) {
+    return this.proposalTemplateService.download(proposalId, projectId);
   }
 
   @Get(':id')
