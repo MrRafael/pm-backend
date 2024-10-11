@@ -26,7 +26,6 @@ export class PaymentInstallmentsService {
 
   update(id: number, updatePaymentInstallmentDto: UpdatePaymentInstallmentDto) {
     const payment = new PaymentInstallment(updatePaymentInstallmentDto, id);
-    console.log(payment);
     return this.paymentRepository.save(payment);
   }
 

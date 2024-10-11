@@ -21,7 +21,8 @@ export class Project {
       this.paymentInstallments = createProjectDto.paymentInstallments;
 
       const now = new Date();
-      this.id = `${now.getFullYear()}.${now.getMonth() + 1}.${now.getDate()}.${now.getHours()}.${now.getMinutes()}.${now.getSeconds()}`;
+      this.id = `${now.getFullYear()}${now.getMonth() + 1}${now.getDate()}-${now.getHours()}${now.getMinutes()}${now.getSeconds()}`;
+      this.createdAt = now;
     }
   }
   @PrimaryColumn()
@@ -58,6 +59,9 @@ export class Project {
 
   @Column({ default: 'waitingApproval' })
   status: 'waitingApproval' | 'approved' | 'inProgress' | 'finished' | 'paid';
+
+  @Column()
+  createdAt: Date;
 
   @OneToMany(
     () => PaymentInstallment,

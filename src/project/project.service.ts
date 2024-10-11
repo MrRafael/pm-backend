@@ -2,7 +2,7 @@ import { Inject, Injectable } from '@nestjs/common';
 import { CreateProjectDto } from './dto/create-project.dto';
 import { UpdateProjectDto } from './dto/update-project.dto';
 import { projectConstants } from './constants';
-import { Raw, Repository } from 'typeorm';
+import { IsNull, Not, Raw, Repository } from 'typeorm';
 import { Project } from './entities/project.entity';
 
 @Injectable()
@@ -31,8 +31,16 @@ export class ProjectService {
       };
     }
 
+    const total = await this.selecCalc();
+    const approved = await this.selecCalc(true);
+
     const [data, result] = await this.projectRepository.findAndCount(options);
-    return { result, data };
+    return { result, data, calc: { total, approved } };
+  }
+
+  async selecCalc(onlyApproved: boolean = false) {
+    const where = { approvalDate: Not(IsNull()) };
+    return this.projectRepository.sum('value', onlyApproved ? where : {});
   }
 
   async findOne(id: string) {

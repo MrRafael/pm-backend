@@ -16,6 +16,8 @@ import { Role } from 'src/enums/role.enum';
 import { v4 as uuidv4 } from 'uuid';
 import { CompleteUserDto } from './dto/complete-user.dto copy';
 import { ResetUserDto } from './dto/reset-user.dto';
+import { MailerService } from '@nestjs-modules/mailer';
+import { ConfigService } from '@nestjs/config';
 
 @Injectable()
 export class UsersService {
@@ -23,6 +25,8 @@ export class UsersService {
     @Inject(usersConstants.providerName)
     private userRepository: Repository<User>,
     private jwtService: JwtService,
+    private readonly mailService: MailerService,
+    private configService: ConfigService,
   ) {}
 
   async create(createUserDto: CreateUserDto) {
@@ -32,14 +36,23 @@ export class UsersService {
       throw new BadRequestException();
     }
 
-    const user = new User();
+    let user = new User();
     user.name = createUserDto.name;
     user.email = createUserDto.email;
     user.roles = createUserDto.roles;
     user.accessCode = uuidv4();
 
-    return this.userRepository.save(user);
-    //TODO: Need to send email
+    user = await this.userRepository.save(user);
+
+    const mailOptions = {
+      to: user.email,
+      subject: 'Conta Criada',
+      text: `Você foi adicionado ao sistema de gestão de projetos da Artecnica.
+      Acesse o link para criar uma senha: ${this.configService.get<string>('frontendURL')}/complete/${user.accessCode}`,
+    };
+
+    this.mailService.sendMail(mailOptions);
+    return user;
   }
 
   async complete(completeUserDto: CompleteUserDto) {
@@ -65,7 +78,7 @@ export class UsersService {
   }
 
   async reset(resetUserDto: ResetUserDto) {
-    const userSaved = await this.findOneByEmail(resetUserDto.email);
+    let userSaved = await this.findOneByEmail(resetUserDto.email);
 
     if (!userSaved) {
       throw new NotFoundException();
@@ -74,8 +87,18 @@ export class UsersService {
     userSaved.accessCode = uuidv4();
     userSaved.changePassLimit = new Date(Date.now() + 15 * 60000);
 
-    return this.userRepository.save(userSaved);
-    //TODO: send email
+    userSaved = await this.userRepository.save(userSaved);
+
+    const mailOptions = {
+      to: userSaved.email,
+      subject: 'Esqueci minha senha',
+      text: `Acesse: ${this.configService.get<string>('frontendURL')}/complete/${userSaved.accessCode}
+      para trocar de senha.`,
+    };
+
+    this.mailService.sendMail(mailOptions);
+
+    return userSaved;
   }
 
   findAll(): Promise<User[]> {

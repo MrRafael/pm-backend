@@ -14,4 +14,9 @@ export default () => ({
     refreshSecret: process.env.JWT_REFRESH_SECRET,
     refreshDuration: process.env.JWT_REFRESH_DURATION || '1d',
   },
+  email: {
+    service: process.env.EMAIL_SERVICE,
+    email: process.env.EMAIL_ADDRESS,
+    password: process.env.EMAIL_PASSWORD,
+  },
 });
