@@ -40,6 +40,12 @@ export class Project {
   title: string;
 
   @Column({ nullable: true })
+  employeeName: string;
+
+  @Column({ nullable: true })
+  employeePhone: string;
+
+  @Column({ nullable: true })
   considerations: string;
 
   @Column({ nullable: true })

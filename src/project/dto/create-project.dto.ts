@@ -27,6 +27,14 @@ export class CreateProjectDto {
 
   @IsString()
   @IsOptional()
+  readonly employeeName: string;
+
+  @IsString()
+  @IsOptional()
+  readonly employeePhone: string;
+
+  @IsString()
+  @IsOptional()
   readonly deliveryTime: string;
 
   @IsString()
