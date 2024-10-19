@@ -46,7 +46,7 @@ export class ProjectFilesService {
 
   async download(id: number) {
     const file = await this.findOne(id);
-    const fileToDownload = createReadStream(join(process.cwd(), file.path));
+    const fileToDownload = createReadStream(file.path);
     return new StreamableFile(fileToDownload, {
       type: file.mimetype,
       disposition: 'attachment; filename="' + file.originalName + '"',

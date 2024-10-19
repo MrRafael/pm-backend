@@ -23,7 +23,7 @@ export class ProjectFilesController {
     FileInterceptor('file', {
       storage: diskStorage({
         destination: function (req, file, cb) {
-          cb(null, '/var/data');
+          cb(null, process.env.FILE_LOCATION);
         },
         filename: function (req, file, cb) {
           cb(null, Date.now() + '-' + file.originalname);

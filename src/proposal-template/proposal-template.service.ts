@@ -41,7 +41,7 @@ export class ProposalTemplateService {
 
   async download(proposalId: number, projectId: string) {
     const proposal = await this.findOne(proposalId);
-    const content = readFileSync(join(process.cwd(), proposal.path), 'binary');
+    const content = readFileSync(proposal.path, 'binary');
 
     if (!proposal.originalName.endsWith('.docx')) {
       throw new BadRequestException();
