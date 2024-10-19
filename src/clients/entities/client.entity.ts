@@ -20,9 +20,6 @@ export class Client {
   email: string;
 
   @Column()
-  employeeName: string;
-
-  @Column()
   address: string;
 
   @OneToMany(() => Project, (project) => project.client, {

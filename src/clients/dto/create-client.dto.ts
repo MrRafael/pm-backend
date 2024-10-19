@@ -15,8 +15,5 @@ export class CreateClientDto {
   readonly email: string;
 
   @IsString()
-  readonly employeeName: string;
-
-  @IsString()
   readonly address: string;
 }
