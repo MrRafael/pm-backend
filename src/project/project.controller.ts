@@ -29,8 +29,9 @@ export class ProjectController {
     @Query('take') take: number,
     @Query('skip') skip: number,
     @Query('keyword') keyword: string,
+    @Query('filters') filters: { status: string[] } = { status: [] },
   ) {
-    return this.projectService.findAll(take, skip, keyword);
+    return this.projectService.findAll(take, skip, keyword, filters);
   }
 
   @Get(':id')

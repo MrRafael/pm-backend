@@ -2,7 +2,7 @@ import { Inject, Injectable } from '@nestjs/common';
 import { CreateProjectDto } from './dto/create-project.dto';
 import { UpdateProjectDto } from './dto/update-project.dto';
 import { projectConstants } from './constants';
-import { IsNull, Not, Raw, Repository } from 'typeorm';
+import { IsNull, Not, Raw, Repository, In } from 'typeorm';
 import { Project } from './entities/project.entity';
 
 @Injectable()
@@ -17,18 +17,34 @@ export class ProjectService {
     return this.projectRepository.save(projectToSave, {});
   }
 
-  async findAll(take: number, skip: number, keyword: string) {
+  async findAll(
+    take: number,
+    skip: number,
+    keyword: string,
+    filter: { status: string[] },
+  ) {
     const options = {
       take: take,
       skip: skip,
       relations: { client: true, paymentInstallments: true },
     };
 
+    const where = {};
+    let addWhere = false;
     if (keyword !== '') {
       keyword = keyword.toLowerCase();
-      options['where'] = {
-        title: Raw((alias) => `LOWER(${alias}) Like '%${keyword}%'`),
-      };
+      where['title'] = Raw((alias) => `LOWER(${alias}) Like '%${keyword}%'`);
+      addWhere = true;
+    }
+
+    if (filter.status.length > 0) {
+      keyword = keyword.toLowerCase();
+      where['status'] = In(filter.status);
+      addWhere = true;
+    }
+
+    if (addWhere) {
+      options['where'] = where;
     }
 
     const total = await this.selecCalc();
