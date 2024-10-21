@@ -10,9 +10,9 @@ export class PaymentInstallment {
   ) {
     if (updatePaymentInstallmentDto && id) {
       this.id = id;
-      this.percent = updatePaymentInstallmentDto.percent;
-      this.paidAt = new Date(updatePaymentInstallmentDto.paidAt);
-      this.paidValue = updatePaymentInstallmentDto.paidValue;
+      this.isPaid = updatePaymentInstallmentDto.isPaid;
+      this.paymentDate = new Date(updatePaymentInstallmentDto.paymentDate);
+      this.paymentValue = updatePaymentInstallmentDto.paymentValue;
       const project = new Project();
       project.id = updatePaymentInstallmentDto.projectId;
       this.project = project;
@@ -22,17 +22,18 @@ export class PaymentInstallment {
   @PrimaryGeneratedColumn()
   id: number;
 
-  @Column()
-  percent: number;
+  @Column({ default: false })
+  isPaid: boolean;
 
   @Column({ nullable: true })
-  paidAt: Date;
+  paymentDate: Date;
 
   @Column({ nullable: true })
-  paidValue: number;
+  paymentValue: number;
 
   @ManyToOne(() => Project, (project) => project.paymentInstallments, {
     onDelete: 'CASCADE',
+    orphanedRowAction: 'delete',
   })
   project: Project;
 }

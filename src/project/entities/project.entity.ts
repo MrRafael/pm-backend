@@ -70,12 +70,15 @@ export class Project {
   @Column()
   createdAt: Date;
 
+  @Column({ default: 1 })
+  installments: number;
+
   @OneToMany(
     () => PaymentInstallment,
     (paymentInstallment) => paymentInstallment.project,
     {
       onDelete: 'NO ACTION',
-      cascade: ['insert'],
+      cascade: true,
     },
   )
   paymentInstallments: PaymentInstallment[];

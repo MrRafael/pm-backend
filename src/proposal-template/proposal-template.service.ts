@@ -42,9 +42,6 @@ export class ProposalTemplateService {
   }
 
   async download(proposalId: number, projectId: string) {
-    console.log(proposalId);
-    console.log(projectId);
-
     const proposal = await this.findOne(proposalId);
     const content = readFileSync(proposal.path, 'binary');
 

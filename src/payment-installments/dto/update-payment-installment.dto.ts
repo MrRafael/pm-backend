@@ -4,8 +4,8 @@ import { CreatePaymentInstallmentDto } from './create-payment-installment.dto';
 export class UpdatePaymentInstallmentDto extends PartialType(
   CreatePaymentInstallmentDto,
 ) {
-  readonly percent: number;
-  readonly paidAt: Date;
-  readonly paidValue: number;
+  readonly isPaid: boolean;
+  readonly paymentDate: Date;
+  readonly paymentValue: number;
   readonly projectId: string;
 }
