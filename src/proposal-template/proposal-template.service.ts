@@ -5,7 +5,7 @@ import {
   StreamableFile,
 } from '@nestjs/common';
 import { ProposalTemplate } from './entities/proposal-template.entity';
-import { Repository } from 'typeorm';
+import { Equal, Repository } from 'typeorm';
 import { proposalTemplateConstants } from './constants';
 import PizZip from 'pizzip';
 import Docxtemplater from 'docxtemplater';
@@ -35,11 +35,16 @@ export class ProposalTemplateService {
   }
 
   async findOne(id: number) {
-    const proposals = await this.proposalRepository.find({ where: { id } });
+    const proposals = await this.proposalRepository.find({
+      where: { id: Equal(id) },
+    });
     return proposals[0];
   }
 
   async download(proposalId: number, projectId: string) {
+    console.log(proposalId);
+    console.log(projectId);
+
     const proposal = await this.findOne(proposalId);
     const content = readFileSync(proposal.path, 'binary');
 
@@ -60,7 +65,12 @@ export class ProposalTemplateService {
       clientValues[`client_${key}`] = project.client[key];
     });
 
-    doc.render({ ...project, ...clientValues });
+    const customFields = {};
+    project.customFields.forEach((cf) => {
+      customFields[`custom_${cf.name}`] = cf.value;
+    });
+
+    doc.render({ ...project, ...clientValues, ...customFields });
 
     const buf = doc.getZip().generate({
       type: 'nodebuffer',

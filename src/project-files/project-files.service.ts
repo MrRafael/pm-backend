@@ -1,7 +1,7 @@
 import { Inject, Injectable, StreamableFile } from '@nestjs/common';
 import { projectFilesConstants } from './constants';
 import { ProjectFile } from './entities/project-file.entity';
-import { Repository } from 'typeorm';
+import { Equal, Repository } from 'typeorm';
 import { CreateProjectFileDto } from './dto/create-project-file.dto';
 import { Project } from 'src/project/entities/project.entity';
 import { FileCategory } from 'src/file-category/entities/file-category.entity';
@@ -40,7 +40,7 @@ export class ProjectFilesService {
   }
 
   async findOne(id: number) {
-    const files = await this.projectFilesRepository.findBy({ id });
+    const files = await this.projectFilesRepository.findBy({ id: Equal(id) });
     return files[0];
   }
 

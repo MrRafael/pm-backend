@@ -7,7 +7,7 @@ import {
 } from '@nestjs/common';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
-import { Not, Repository, ArrayContains } from 'typeorm';
+import { Not, Repository, ArrayContains, Equal } from 'typeorm';
 import { User } from './entities/user.entity';
 import { usersConstants } from './constants';
 import { JwtService } from '@nestjs/jwt';
@@ -108,7 +108,9 @@ export class UsersService {
   }
 
   async findOneByEmail(email: string) {
-    const users = await this.userRepository.find({ where: { email } });
+    const users = await this.userRepository.find({
+      where: { email: Equal(email) },
+    });
     return users[0];
   }
 
@@ -118,13 +120,13 @@ export class UsersService {
     }
 
     const users = await this.userRepository.find({
-      where: { accessCode: code },
+      where: { accessCode: Equal(code) },
     });
     return users[0];
   }
 
   async findOne(id: number) {
-    const users = await this.userRepository.find({ where: { id } });
+    const users = await this.userRepository.find({ where: { id: Equal(id) } });
     return users[0];
   }
 

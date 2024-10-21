@@ -16,6 +16,7 @@ import { ProjectModule } from './project/project.module';
 import { PaymentInstallmentsModule } from './payment-installments/payment-installments.module';
 import { ProjectFilesModule } from './project-files/project-files.module';
 import { ProjectNoteModule } from './project-note/project-note.module';
+import { CustomFieldModule } from './custom-field/custom-field.module';
 
 @Module({
   imports: [
@@ -41,6 +42,7 @@ import { ProjectNoteModule } from './project-note/project-note.module';
     PaymentInstallmentsModule,
     ProjectFilesModule,
     ProjectNoteModule,
+    CustomFieldModule,
   ],
   controllers: [AppController],
   providers: [

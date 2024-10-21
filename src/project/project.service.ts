@@ -2,7 +2,7 @@ import { Inject, Injectable } from '@nestjs/common';
 import { CreateProjectDto } from './dto/create-project.dto';
 import { UpdateProjectDto } from './dto/update-project.dto';
 import { projectConstants } from './constants';
-import { IsNull, Not, Raw, Repository, In } from 'typeorm';
+import { IsNull, Not, Raw, Repository, In, Equal } from 'typeorm';
 import { Project } from './entities/project.entity';
 
 @Injectable()
@@ -61,10 +61,11 @@ export class ProjectService {
 
   async findOne(id: string) {
     const projects = await this.projectRepository.find({
-      where: { id },
+      where: { id: Equal(id) },
       relations: {
         client: true,
         paymentInstallments: true,
+        customFields: true,
         files: { fileCategory: true },
         notes: { user: true },
       },

@@ -4,6 +4,7 @@ import { ProjectFile } from 'src/project-files/entities/project-file.entity';
 import { Column, Entity, ManyToOne, OneToMany, PrimaryColumn } from 'typeorm';
 import { CreateProjectDto } from '../dto/create-project.dto';
 import { ProjectNote } from 'src/project-note/entities/project-note.entity';
+import { CustomField } from 'src/custom-field/entities/custom-field.entity';
 
 @Entity()
 export class Project {
@@ -88,4 +89,10 @@ export class Project {
     onDelete: 'NO ACTION',
   })
   notes: ProjectNote[];
+
+  @OneToMany(() => CustomField, (cf) => cf.project, {
+    onDelete: 'NO ACTION',
+    cascade: true,
+  })
+  customFields: CustomField[];
 }

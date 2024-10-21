@@ -1,4 +1,5 @@
 import { IsNumber, IsOptional, IsString } from 'class-validator';
+import { CustomField } from 'src/custom-field/entities/custom-field.entity';
 import { PaymentInstallment } from 'src/payment-installments/entities/payment-installment.entity';
 
 export class CreateProjectDto {
@@ -42,4 +43,6 @@ export class CreateProjectDto {
   readonly paymentMethod: string;
 
   readonly paymentInstallments: PaymentInstallment[];
+
+  readonly customFields: CustomField[];
 }

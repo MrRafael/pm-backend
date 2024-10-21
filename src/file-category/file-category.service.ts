@@ -1,7 +1,7 @@
 import { Inject, Injectable } from '@nestjs/common';
 import { CreateFileCategoryDto } from './dto/create-file-category.dto';
 import { FileCategory } from './entities/file-category.entity';
-import { Repository } from 'typeorm';
+import { Equal, Repository } from 'typeorm';
 import { fileCategoryConstants } from './constants';
 
 @Injectable()
@@ -20,7 +20,7 @@ export class FileCategoryService {
 
   async findOne(id: number) {
     const categories = await this.fileCategoryRepository.find({
-      where: { id },
+      where: { id: Equal(id) },
     });
     return categories[0];
   }

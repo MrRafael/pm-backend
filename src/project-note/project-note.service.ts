@@ -2,7 +2,7 @@ import { ForbiddenException, Inject, Injectable } from '@nestjs/common';
 import { CreateProjectNoteDto } from './dto/create-project-note.dto';
 import { projectNotesConstants } from './constants';
 import { ProjectNote } from './entities/project-note.entity';
-import { Repository } from 'typeorm';
+import { Equal, Repository } from 'typeorm';
 import { JwtService } from '@nestjs/jwt';
 import { UsersService } from 'src/users/users.service';
 
@@ -37,7 +37,7 @@ export class ProjectNoteService {
     const decoded = this.jwtService.decode(token);
 
     const notes = await this.projectNotesRepository.find({
-      where: { id },
+      where: { id: Equal(id) },
       relations: { user: true },
     });
 

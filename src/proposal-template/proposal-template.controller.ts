@@ -7,6 +7,7 @@ import {
   UseInterceptors,
   UploadedFile,
   ParseFilePipe,
+  Query,
 } from '@nestjs/common';
 import { ProposalTemplateService } from './proposal-template.service';
 import { FileInterceptor } from '@nestjs/platform-express';
@@ -45,8 +46,8 @@ export class ProposalTemplateController {
 
   @Get('/download')
   download(
-    @Param('proposalId') proposalId: number,
-    @Param('projectId') projectId: string,
+    @Query('proposalId') proposalId: number,
+    @Query('projectId') projectId: string,
   ) {
     return this.proposalTemplateService.download(proposalId, projectId);
   }
